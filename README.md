@@ -30,8 +30,8 @@ mkdir myproject
 py -3 -m venv .venv
 
 # Activeer de omgeving zodat we hem in de console kunnen gebruiken
-.venv\Scrips\activate           # Windows
-. .venv/bin/activate            # Mac/Linux
+.venv\Scrips\activate               # Windows
+. .venv/bin/activate                # Mac/Linux
 
 # Installeer Flask met pip
 pip install Flask
@@ -71,3 +71,86 @@ Door het gebruik van de naamconventie kunnen we een kort commando gebruiken.
 Het commando ```flask run``` is voldoende.
 Op de link die verschijnt in de console in je favoriete browser,
 de tekst 'Hello, World!' zou moeten verschijnen.
+Doormiddel van ```ctrl + c``` kun je applicatie stoppen.
+
+## Input krijgen
+
+Een antwoord geven op een verzoek is leuk,
+maar het is ook fijn als de gebruiker van onze API input kan leveren.
+Hiervoor gaan we 'Hello World' uitbreiden naar een persoonlijke begroeting.
+We voegen een functie toe aan de applicatie. Deze ziet er als volgt uit.
+
+```python
+# Maak een route, deze gaat de gebruiker persoonlijk begroeten
+# We veranderen de route door er een variabel in te zetten.
+# We zetten de variabel tussen < en > en geven deze een naam.
+@app.route('/<name>')
+def hello_name(name):
+    # Deze functie wordt uitgevoerd als de route bezocht wordt
+    # Het verschil met de vorige functie is het bestaan van een parameter
+
+    # Vervolgens begroeten we de gebruiker, let op de f voor de qoute
+    # De f geeft aan dat we binnen de string variabele gaan plakken, tussen { en }
+    return f'<p>Hello, {name}</p>'
+```
+
+De code moet vervolgens opnieuw worden opgestart.
+Er is echter een andere manier om het programma te laten draaien.
+Op deze manier hoeven we niet na elke wijziging het programma opnieuw op te starten.
+We doen dit door Flask te starten in de zogehete 'debug' modus.
+
+```ps
+flask run --debug
+```
+
+Vervolgens kun je in je favoriete browser, de link uit de console openen.
+In de navigatiebalk pas je het adres aan naar: ```http://127.0.0.1:5000/name```.
+Vervang ```name``` door je eigen naam.
+Er is echter een klein probleem met deze code, qua veiligheid is dit best slecht.
+We moeten ervoor zorgen dat de input van de gebruiker wordt gefilterd.
+De huidige zal ieder stuk tekst direct op het scherm tonen.
+Als hier code in staat, dan zal dit worden uitgevoerd.
+Je kan dit testen door als input in de browser ```<b>name``` in te vullen.
+Je zal zien dat de tekst dan wordt geformateerd.
+Dit lossen we op met de escape functie.
+
+```python
+# bovenin het document moeten we naast Flask, ook escape importeren
+from markupsafe import escape
+
+# Vervang de return in de functie met
+return f'<p>Hello, {escape(name)}</p>'
+```
+
+De complete code ziet er nu uit als:
+
+```python
+# Importeer the Flask bibliotheek
+# Van de Flask bibliotheek importeer je de Flask class
+from flask import Flask
+from markupsafe import escape
+
+# Maak een instantie van de Flask class
+# __name__ is een variabele die de naam van de Python module bevat
+# De Flask class gebruikt deze om het juiste pad te vinden
+# Als we dit bestand uitvoeren is de waarde hiervan __main__, dit veranderd als dit bestand geimporteerd wordt.
+app = Flask(__name__)
+
+# Maak een route, dit is een URL die je kan bezoeken in de browser
+# In dit geval is het de root van de website, de URL zonder iets erachter
+@app.route('/')
+def hello_world():
+    # Deze functie wordt uitgevoerd als de route bezocht wordt
+    # De return waarde wordt getoond in de browser / teruggeven aan de aanvrager
+    return '<p>Hello, World!</p>'
+
+# Maak een route, deze gaat de gebruiker persoonlijk begroeten
+# We veranderen de route door er een variabel in te zetten.
+# We zetten de variabel tussen < en > en geven deze een naam.
+@app.route('/<name>')
+def hello_name(name):
+    # Deze functie wordt uitgevoerd als de route bezocht wordt
+    # Het verschil met de vorige functie is het bestaan van een parameter
+    # Vervolgens begroeten we de gebruiker
+    return f'<p>Hello, {escape(name)}</p>'
+```
