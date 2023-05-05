@@ -125,8 +125,8 @@ return f'<p>Hello, {escape(name)}</p>'
 De complete code ziet er nu uit als:
 
 ```python
-# Importeer the Flask bibliotheek
 # Van de Flask bibliotheek importeer je de Flask class
+# Van markupsafe importeren we de escape functie
 from flask import Flask
 from markupsafe import escape
 
@@ -154,3 +154,60 @@ def hello_name(name):
     # Vervolgens begroeten we de gebruiker
     return f'<p>Hello, {escape(name)}</p>'
 ```
+
+## Een willekeurige set
+
+Laten we beginnen met het maken van het spel.
+We zullen nog niet kijken naar het spelen van het spel,
+maar we gaan de computer een willekeurige set laten doen.
+We gaan hiervoor de ```hello_name``` functie (de onderste functie) vervangen.
+Voordat we echter kunnen beginnen met schrijven van de functie,
+moeten we de random bibliotheek importeren.
+Deze voegen we toe aan het rijtje met van importeer opdrachten bovenin het document.
+
+```python
+# Van de Flask bibliotheek importeer je de Flask class
+# Van markupsafe importeren we de escape functie
+# We importeren de random bibliotheek
+from flask import Flask, abort
+from markupsafe import escape
+import random
+```
+
+We willen dat de computer een keuze nmaakt tussen steen, papier en schaar.
+De ```random``` bibliotheek biedt hier een goede functie voor: ```choice```.
+Deze functie kiest een willekeurig item uit een reeks.
+Door deze functie een reeks te geven met alle optie waaruit gekozen kan worden,
+krijgen we een willekeurige keuze terug.
+*Onthoud dat we de ```hello_name``` functie **vervangen** met deze.
+
+```python
+# Maak een route, deze wordt gebruik voor het maken van een willekeurige set.
+# Deze route wordt bereikt met localhost:5000/sps/
+@app.route('/sps/')
+def sps_move():
+    # Geef een willekeurige set terug aan de applicatie.
+    return random.choice(['steen', 'papier', 'schaar'])
+```
+
+## Het Spel
+
+Laten we beginnen met het implementeren van het spel.
+We zouden het kunnen aanpakken door een groot mijnenveld aan voorwaardes te schrijven.
+Echter lijkt het me interresant om te kiezen voor een iets kortere oplossing.
+Hiervoor hebben we een verzameling nodig die voor iedere zet,
+de winnende en de verliezende set bevat.
+Hiervoor kunnen we een ```drie dimensionale reeks``` gebruiken,
+in het Engels is dit een ```three dimensional array```.
+Dit is een reeks, die reeksen bevat.
+Deze array zetten we direct onder de import opdrachten neer.
+
+```python
+# We maken een drie dimensionale reeks aan
+# Hierin geven we voor iedere set, de winnende en de verliezende set
+# Dit gebeurd op volgorde. Steen wint van schaar en verliest van papier
+# Papier wint van steen en verliest van schaar en schaar wint van papier en verliest van steen
+# In iedere reeks zie je: [winnende set, gelijke set, verliezende set]
+sps_results = [['schaar', 'steen', 'papier'], ['steen', 'papier', 'schaar'], ['papier', 'schaar', 'steen']]
+```
+
